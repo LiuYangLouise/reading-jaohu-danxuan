@@ -1,0 +1,2431 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reborn Reading Practice Test</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e8f2f2 0%, #d4e6e6 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .app-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .header h1 {
+            color: #0F6B6B;
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+        
+        .header .motto {
+            color: #2a8c8c;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        /* 计时器样式 */
+        .timer-container {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(15, 107, 107, 0.1);
+            border: 2px solid #0F6B6B;
+            text-align: center;
+            min-width: 180px;
+        }
+        
+        .timer-label {
+            color: #0F6B6B;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .timer-display {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0F6B6B;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .time-warning {
+            color: #e74c3c;
+            font-weight: 600;
+            font-size: 12px;
+            margin-top: 5px;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        /* 上传面板 */
+        .upload-panel {
+            display: block;
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 2px solid #0F6B6B;
+        }
+        
+        .upload-header {
+            color: #0F6B6B;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .upload-instructions {
+            background-color: #f0f8f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 1px solid #d1eaea;
+        }
+        
+        .upload-instructions h3 {
+            color: #0F6B6B;
+            margin-bottom: 10px;
+        }
+        
+        .upload-instructions ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-instructions li {
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .upload-instructions code {
+            background-color: #e8f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #0F6B6B;
+        }
+        
+        .upload-area {
+            border: 3px dashed #0F6B6B;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background-color: #f8fcfc;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            background-color: #e8f4f4;
+            border-color: #0d5c5c;
+        }
+        
+        .upload-area p {
+            color: #0F6B6B;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .upload-area .file-types {
+            color: #2a8c8c;
+            font-size: 14px;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .upload-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .upload-btn {
+            background-color: #0F6B6B;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #0d5c5c;
+        }
+        
+        .upload-btn:hover:not(:disabled) {
+            background-color: #0d5c5c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(15, 107, 107, 0.2);
+        }
+        
+        .upload-btn:disabled {
+            background-color: #a3c2c2;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            border-color: #8fb3b3;
+        }
+        
+        .upload-btn.secondary {
+            background-color: #f0f8f8;
+            color: #0F6B6B;
+            border: 2px solid #0F6B6B;
+        }
+        
+        .upload-btn.secondary:hover:not(:disabled) {
+            background-color: #e0f0f0;
+        }
+        
+        .file-preview {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f0f8f8;
+            border-radius: 8px;
+            border: 1px solid #d1eaea;
+        }
+        
+        .file-preview .file-name {
+            font-weight: 600;
+            color: #0F6B6B;
+            margin-bottom: 5px;
+        }
+        
+        .file-preview .file-size {
+            color: #2a8c8c;
+            font-size: 14px;
+        }
+        
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loader.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0F6B6B;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loader-text {
+            color: #0F6B6B;
+            font-size: 14px;
+        }
+        
+        .main-content {
+            display: none; /* 初始隐藏 */
+        }
+        
+        .container {
+            display: flex;
+            width: 100%;
+            min-height: 650px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e0eaea;
+        }
+        
+        .email-section {
+            flex: 1;
+            padding: 30px;
+            border-right: 3px dashed #d1eaea;
+            overflow-y: auto;
+            background-color: #F8F8F8;
+            position: relative;
+        }
+        
+        .questions-section {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            background-color: #F8F8F8;
+        }
+        
+        .email-header {
+            background-color: #0F6B6B;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 2px solid #0d5c5c;
+        }
+        
+        .email-header h1 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .email-body {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            line-height: 1.6;
+            color: #333;
+            font-size: 15px;
+            border: 1px solid #e0eaea;
+        }
+        
+        .email-body p {
+            margin-bottom: 15px;
+        }
+        
+        /* 单题显示样式 */
+        .question-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #0F6B6B;
+            border: 1px solid #e0eaea;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .question-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .question-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: #0F6B6B;
+            color: white;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .question-text {
+            flex: 1;
+            padding-top: 5px;
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex: 1;
+        }
+        
+        .option {
+            padding: 16px;
+            background-color: #f0f8f8;
+            border: 2px solid #d1eaea;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            background-color: #e8f4f4;
+            border-color: #0F6B6B;
+        }
+        
+        .option.selected {
+            background-color: #e0f0f0;
+            border-color: #0F6B6B;
+        }
+        
+        .option-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background-color: #2a8c8c;
+            color: white;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .option-text {
+            flex: 1;
+        }
+        
+        .check-btn {
+            background-color: #0F6B6B;
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+            border: 2px solid #0d5c5c;
+            display: none; /* 提交后才显示 */
+        }
+        
+        .check-btn.visible {
+            display: block;
+        }
+        
+        .check-btn:hover {
+            background-color: #0d5c5c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(15, 107, 107, 0.2);
+        }
+        
+        .check-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* 题目导航 */
+        .question-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #e0f0f0;
+        }
+        
+        .nav-btn {
+            background-color: #0F6B6B;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #0d5c5c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover:not(:disabled) {
+            background-color: #0d5c5c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(15, 107, 107, 0.2);
+        }
+        
+        .nav-btn:disabled {
+            background-color: #a3c2c2;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            border-color: #8fb3b3;
+        }
+        
+        .question-counter {
+            color: #0F6B6B;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .explanation {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            background-color: #f8fcfc;
+            border-radius: 8px;
+            padding: 0 20px;
+            margin-top: 20px;
+            border: 1px solid #e0f0f0;
+        }
+        
+        .explanation.show {
+            max-height: 400px;
+            padding: 20px;
+        }
+        
+        .explanation h4 {
+            color: #0F6B6B;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .explanation p {
+            color: #555;
+            line-height: 1.5;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .explanation-content {
+            display: block;
+        }
+        
+        .explanation-content.chinese {
+            display: none;
+        }
+        
+        .language-switch {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .lang-btn {
+            background-color: #e0f0f0;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #0F6B6B;
+            transition: all 0.2s;
+            border: 1px solid #cce0e0;
+        }
+        
+        .lang-btn:hover {
+            background-color: #d1eaea;
+        }
+        
+        .lang-btn.active {
+            background-color: #0F6B6B;
+            color: white;
+            border-color: #0d5c5c;
+        }
+        
+        .correct-answer {
+            color: #2ecc71;
+            font-weight: 600;
+            margin-top: 5px;
+            padding: 5px 10px;
+            background-color: #e8f7ef;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .incorrect-answer {
+            color: #e74c3c;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .score-display {
+            text-align: center;
+            padding: 15px;
+            background-color: #f0f8f8;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #0F6B6B;
+            font-size: 17px;
+            border: 1px solid #d1eaea;
+        }
+        
+        /* 结果面板样式 */
+        .results-panel {
+            display: none;
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 2px solid #0F6B6B;
+        }
+        
+        .results-panel.show {
+            display: block;
+        }
+        
+        .results-header {
+            color: #0F6B6B;
+            font-size: 24px;
+            margin-bottom: 25px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0f0f0;
+        }
+        
+        .results-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .article-result {
+            background-color: #f0f8f8;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 200px;
+            border: 1px solid #d1eaea;
+        }
+        
+        .article-title {
+            color: #0F6B6B;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .article-score {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0F6B6B;
+            margin: 10px 0;
+        }
+        
+        .article-total {
+            color: #2a8c8c;
+            font-size: 14px;
+        }
+        
+        .submit-btn {
+            background-color: #0F6B6B;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: block;
+            margin: 30px auto 0;
+            border: 2px solid #0d5c5c;
+        }
+        
+        .submit-btn:hover {
+            background-color: #0d5c5c;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(15, 107, 107, 0.2);
+        }
+        
+        .submit-btn:disabled {
+            background-color: #a3c2c2;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            border-color: #8fb3b3;
+        }
+        
+        .completion-notice {
+            text-align: center;
+            color: #e74c3c;
+            font-weight: 600;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fdeded;
+            border-radius: 8px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* 文章导航样式 */
+        .article-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: #f0f8f8;
+            border-radius: 10px;
+            border: 1px solid #d1eaea;
+        }
+        
+        .article-nav-btn {
+            background-color: #0F6B6B;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #0d5c5c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .article-nav-btn:hover:not(:disabled) {
+            background-color: #0d5c5c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(15, 107, 107, 0.2);
+        }
+        
+        .article-nav-btn:disabled {
+            background-color: #a3c2c2;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            border-color: #8fb3b3;
+        }
+        
+        .article-indicator {
+            color: #0F6B6B;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .section-title {
+            color: #0F6B6B;
+            font-size: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0f0f0;
+        }
+        
+        .feedback-correct {
+            color: #2ecc71;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .feedback-incorrect {
+            color: #e74c3c;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .highlight {
+            background-color: #e8f4f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+            color: #0F6B6B;
+            font-weight: 500;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .email-body ul, .email-body ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .email-body li {
+            margin-bottom: 8px;
+        }
+        
+        .important-note {
+            background-color: #fff9e6;
+            border-left: 4px solid #ffcc00;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        /* 文章容器样式 */
+        .article-content {
+            display: block;
+        }
+        
+        .article-content.hidden {
+            display: none;
+        }
+        
+        /* 当前文章和题目标识 */
+        .current-question-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #0F6B6B;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 10;
+        }
+        
+        /* 文章题目分数显示 */
+        .article-score-display {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: #f0f8f8;
+            color: #0F6B6B;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 10;
+            border: 1px solid #d1eaea;
+        }
+        
+        /* 提交后的题目反馈 */
+        .question-feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .question-feedback.correct {
+            background-color: #e8f7ef;
+            color: #2ecc71;
+            border: 1px solid #d1e7dd;
+        }
+        
+        .question-feedback.incorrect {
+            background-color: #fdeded;
+            color: #e74c3c;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* 解析规则样式 */
+        .parsing-rules {
+            background-color: #fff9e6;
+            border-left: 4px solid #ffcc00;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .parsing-rules h4 {
+            color: #0F6B6B;
+            margin-bottom: 10px;
+        }
+        
+        .parsing-rules code {
+            background-color: #e8f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #0F6B6B;
+            display: inline-block;
+            margin: 2px 0;
+        }
+        
+        .error-message {
+            background-color: #fdeded;
+            color: #e74c3c;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .email-section, .questions-section {
+                width: 100%;
+                border-right: none;
+                border-bottom: 3px dashed #d1eaea;
+                max-height: 400px;
+            }
+            
+            .timer-container {
+                position: static;
+                margin: 0 auto 20px;
+                width: fit-content;
+            }
+            
+            .results-summary {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .upload-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <div class="timer-container">
+                <div class="timer-label">Reading Timer</div>
+                <div class="timer-display" id="timer-display">00:00:00</div>
+                <div class="time-warning" id="time-warning" style="display: none;">时间已到，不能再回答了哦</div>
+            </div>
+            <h1>📚 Reborn Reading Practice Test</h1>
+            <div class="motto">天天进步，每日新生</div>
+        </div>
+        
+        <!-- 上传面板 -->
+        <div class="upload-panel" id="upload-panel">
+            <div class="upload-header">📁 导入阅读文章</div>
+            
+            <div class="upload-instructions">
+                <h3>使用说明：</h3>
+                <ul>
+                    <li>支持导入 <strong>1-3篇</strong> 阅读文章，格式可以是：TXT、PDF、Word、Excel</li>
+                    <li>每篇文章需要包含文章内容和至少5道题目</li>
+                    <li>系统会自动识别文章和题目，并按照标准托福阅读格式展示</li>
+                </ul>
+                
+                <div class="parsing-rules">
+                    <h4>📝 推荐文档格式：</h4>
+                    <p>请按照以下格式编写文档：</p>
+                    <p><code>文章标题：您的文章标题</code></p>
+                    <p><code>文章内容：这里是文章的第一段内容。</code></p>
+                    <p><code>文章的第二段内容在这里。</code></p>
+                    <p><code>第三段内容...</code></p>
+                    <p><code>---分隔符---</code></p>
+                    <p><code>题目1：第一道题目是什么？</code></p>
+                    <p><code>A. 选项A的内容</code></p>
+                    <p><code>B. 选项B的内容</code></p>
+                    <p><code>C. 选项C的内容</code></p>
+                    <p><code>D. 选项D的内容</code></p>
+                    <p><code>答案：B</code></p>
+                    <p><code>解析：这里是题目的详细解析...</code></p>
+                    <p><code>---分隔符---</code></p>
+                    <p><code>题目2：第二道题目是什么？</code></p>
+                    <p><code>A. 选项A</code></p>
+                    <p><code>B. 选项B</code></p>
+                    <p><code>C. 选项C</code></p>
+                    <p><code>D. 选项D</code></p>
+                    <p><code>答案：A</code></p>
+                    <p><code>解析：第二题的解析...</code></p>
+                </div>
+                
+                <div class="error-message" id="error-message"></div>
+            </div>
+            
+            <div class="upload-area" id="upload-area">
+                <p><strong>点击选择文件或拖放文件到这里</strong></p>
+                <p class="file-types">支持格式：TXT, PDF, DOC, DOCX, XLS, XLSX</p>
+                <input type="file" id="file-input" multiple accept=".txt,.pdf,.doc,.docx,.xls,.xlsx">
+            </div>
+            
+            <div class="loader" id="upload-loader">
+                <div class="spinner"></div>
+                <div class="loader-text">正在处理文件，请稍候...</div>
+            </div>
+            
+            <div class="file-preview" id="file-preview" style="display: none;"></div>
+            
+            <div class="upload-buttons">
+                <button class="upload-btn" id="start-practice-btn" disabled>开始练习</button>
+                <button class="upload-btn secondary" id="reset-btn">清空重选</button>
+            </div>
+        </div>
+        
+        <!-- 主内容区域（初始隐藏） -->
+        <div class="main-content" id="main-content">
+            <!-- 文章导航 -->
+            <div class="article-navigation">
+                <button class="article-nav-btn" id="prev-article-btn" disabled>
+                    ← Previous Article
+                </button>
+                <div class="article-indicator">Article <span id="current-article">1</span> of <span id="total-articles">1</span>: <span id="article-title">Baroque Art</span></div>
+                <button class="article-nav-btn" id="next-article-btn">
+                    Next Article →
+                </button>
+            </div>
+            
+            <div class="container">
+                <!-- 左侧：文章固定显示 -->
+                <div class="email-section">
+                    <div class="article-score-display" id="article-score-display">
+                        Score: <span id="current-article-score">0</span>/<span id="total-questions-per-article">5</span>
+                    </div>
+                    <div class="current-question-indicator" id="current-question-indicator">
+                        Question <span id="current-q-num">1</span>/<span id="total-questions">5</span>
+                    </div>
+                    
+                    <!-- 文章内容将动态插入到这里 -->
+                    <div id="articles-content-container"></div>
+                </div>
+                
+                <!-- 右侧：当前题目显示 -->
+                <div class="questions-section">
+                    <div class="section-title">📝 Reading Comprehension Question</div>
+                    
+                    <!-- 题目内容将动态插入到这里 -->
+                    <div id="questions-container"></div>
+                </div>
+            </div>
+            
+            <!-- 提交按钮和结果面板 -->
+            <div class="completion-notice" id="completion-notice">
+                ⚠️ Please complete all questions before submitting. You have answered <span id="answered-count">0</span> of <span id="total-questions-count">0</span> questions.
+            </div>
+            
+            <button class="submit-btn" id="submit-all-btn" disabled>Submit All Answers</button>
+            
+            <div class="results-panel" id="results-panel">
+                <div class="results-header">📊 Your Results</div>
+                
+                <div class="results-summary" id="results-summary">
+                    <!-- 文章结果将动态插入到这里 -->
+                </div>
+                
+                <div class="score-display">
+                    🎯 Your overall performance: <span id="percentage-score">0%</span> (<span id="total-correct">0</span>/<span id="total-questions-final">0</span> correct)
+                </div>
+                
+                <div class="important-note">
+                    <strong>Note:</strong> You can now view detailed explanations for each question by clicking "Show Explanation" buttons. Use the language buttons to toggle between English and Chinese explanations.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM元素引用
+            const uploadPanel = document.getElementById('upload-panel');
+            const mainContent = document.getElementById('main-content');
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            const filePreview = document.getElementById('file-preview');
+            const uploadLoader = document.getElementById('upload-loader');
+            const startPracticeBtn = document.getElementById('start-practice-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const errorMessage = document.getElementById('error-message');
+            
+            // 计时器相关
+            const timerDisplay = document.getElementById('timer-display');
+            const timeWarning = document.getElementById('time-warning');
+            
+            // 练习相关
+            const submitBtn = document.getElementById('submit-all-btn');
+            const resultsPanel = document.getElementById('results-panel');
+            const completionNotice = document.getElementById('completion-notice');
+            const answeredCountElement = document.getElementById('answered-count');
+            const totalQuestionsCountElement = document.getElementById('total-questions-count');
+            const totalQuestionsFinalElement = document.getElementById('total-questions-final');
+            
+            // 文章导航相关
+            const prevArticleBtn = document.getElementById('prev-article-btn');
+            const nextArticleBtn = document.getElementById('next-article-btn');
+            const currentArticleElement = document.getElementById('current-article');
+            const totalArticlesElement = document.getElementById('total-articles');
+            const articleTitleElement = document.getElementById('article-title');
+            
+            // 文章内容容器
+            const articlesContentContainer = document.getElementById('articles-content-container');
+            const questionsContainer = document.getElementById('questions-container');
+            const resultsSummary = document.getElementById('results-summary');
+            
+            // 状态变量
+            let uploadedFiles = [];
+            let articlesData = [];
+            let isTimerRunning = false;
+            let timerStartTime = null;
+            let elapsedSeconds = 0;
+            let timerInterval = null;
+            const maxTime = 2 * 60 * 60; // 2小时，单位：秒
+            
+            // 练习状态变量
+            let currentArticle = 1;
+            let totalArticles = 0;
+            let currentQuestion = {};
+            let totalQuestionsPerArticle = {};
+            let answeredQuestions = new Set();
+            let userAnswers = {};
+            let scores = {};
+            let correctAnswers = {};
+            let isSubmitted = false;
+            
+            // 初始化文件上传区域
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#e8f4f4';
+                uploadArea.style.borderColor = '#0d5c5c';
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.style.backgroundColor = '#f8fcfc';
+                uploadArea.style.borderColor = '#0F6B6B';
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#f8fcfc';
+                uploadArea.style.borderColor = '#0F6B6B';
+                
+                const files = e.dataTransfer.files;
+                handleFiles(files);
+            });
+            
+            fileInput.addEventListener('change', function(e) {
+                handleFiles(e.target.files);
+            });
+            
+            // 处理上传的文件
+            async function handleFiles(files) {
+                if (files.length === 0) return;
+                
+                // 检查文件数量
+                if (uploadedFiles.length + files.length > 3) {
+                    showError('最多只能上传3篇文章！');
+                    return;
+                }
+                
+                // 显示加载指示器
+                uploadLoader.classList.add('active');
+                errorMessage.classList.remove('show');
+                
+                try {
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        
+                        // 检查文件类型
+                        const fileType = file.name.split('.').pop().toLowerCase();
+                        const allowedTypes = ['txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx'];
+                        
+                        if (!allowedTypes.includes(fileType)) {
+                            showError(`文件 "${file.name}" 格式不支持！`);
+                            continue;
+                        }
+                        
+                        // 检查文件大小（限制10MB）
+                        if (file.size > 10 * 1024 * 1024) {
+                            showError(`文件 "${file.name}" 太大，请上传小于10MB的文件`);
+                            continue;
+                        }
+                        
+                        // 添加到上传文件列表
+                        uploadedFiles.push({
+                            name: file.name,
+                            size: formatFileSize(file.size),
+                            type: fileType,
+                            file: file
+                        });
+                        
+                        // 解析文件内容
+                        try {
+                            const articleData = await parseFileContent(file);
+                            articlesData.push(articleData);
+                            console.log(`文件 "${file.name}" 解析成功:`, articleData);
+                        } catch (parseError) {
+                            console.error(`文件 "${file.name}" 解析失败:`, parseError);
+                            // 如果解析失败，使用智能解析
+                            const articleData = parseContentSmart(file);
+                            articlesData.push(articleData);
+                        }
+                    }
+                    
+                    // 更新文件预览
+                    updateFilePreview();
+                    
+                    // 隐藏加载指示器
+                    uploadLoader.classList.remove('active');
+                    
+                    // 启用开始练习按钮
+                    if (uploadedFiles.length > 0) {
+                        startPracticeBtn.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('文件处理错误:', error);
+                    showError('文件处理过程中出现错误，请重试。');
+                    uploadLoader.classList.remove('active');
+                }
+            }
+            
+            // 显示错误信息
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.classList.add('show');
+            }
+            
+            // 格式化文件大小
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // 更新文件预览
+            function updateFilePreview() {
+                filePreview.style.display = 'block';
+                filePreview.innerHTML = '<strong>已选择文件：</strong><br>';
+                
+                uploadedFiles.forEach((file, index) => {
+                    filePreview.innerHTML += `${index + 1}. ${file.name} (${file.size})<br>`;
+                });
+            }
+            
+            // 重置按钮事件
+            resetBtn.addEventListener('click', function() {
+                uploadedFiles = [];
+                articlesData = [];
+                filePreview.style.display = 'none';
+                startPracticeBtn.disabled = true;
+                fileInput.value = '';
+                errorMessage.classList.remove('show');
+            });
+            
+            // 文件内容解析
+            async function parseFileContent(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        try {
+                            const content = e.target.result;
+                            const articleData = parseContentSmart(file, content);
+                            resolve(articleData);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    
+                    reader.onerror = function(e) {
+                        reject(new Error('文件读取失败'));
+                    };
+                    
+                    // 根据文件类型选择读取方式
+                    if (file.type === 'application/pdf') {
+                        // PDF文件简化处理
+                        reader.readAsText(file);
+                    } else {
+                        // 其他文件按文本处理
+                        reader.readAsText(file, 'UTF-8');
+                    }
+                });
+            }
+            
+            // 智能内容解析
+            function parseContentSmart(file, content = null) {
+                if (!content) {
+                    // 如果是直接调用，使用默认内容
+                    return getDefaultArticle(articlesData.length + 1);
+                }
+                
+                console.log(`解析文件: ${file.name}, 大小: ${content.length} 字符`);
+                
+                // 清理内容
+                content = content.trim();
+                
+                // 方法1: 尝试解析标准格式
+                const standardResult = parseStandardFormat(content, file.name);
+                if (standardResult && standardResult.questions.length >= 3) {
+                    console.log('使用标准格式解析成功');
+                    return standardResult;
+                }
+                
+                // 方法2: 尝试解析TPO格式
+                const tpoResult = parseTPOFormat(content, file.name);
+                if (tpoResult && tpoResult.questions.length >= 3) {
+                    console.log('使用TPO格式解析成功');
+                    return tpoResult;
+                }
+                
+                // 方法3: 通用解析
+                const generalResult = parseGeneralFormat(content, file.name);
+                if (generalResult && generalResult.questions.length >= 3) {
+                    console.log('使用通用格式解析成功');
+                    return generalResult;
+                }
+                
+                // 方法4: 简单解析
+                const simpleResult = parseSimpleFormat(content, file.name);
+                console.log('使用简单格式解析');
+                return simpleResult;
+            }
+            
+            // 解析标准格式
+            function parseStandardFormat(content, filename) {
+                try {
+                    const lines = content.split('\n').filter(line => line.trim());
+                    
+                    if (lines.length < 5) return null;
+                    
+                    // 查找标题
+                    let title = '';
+                    let contentStart = 0;
+                    
+                    for (let i = 0; i < Math.min(10, lines.length); i++) {
+                        if (lines[i].includes('文章标题：') || lines[i].includes('Title:')) {
+                            title = lines[i].split(/[:：]/)[1]?.trim() || 
+                                   filename.replace(/\.[^/.]+$/, '');
+                            contentStart = i + 1;
+                            break;
+                        }
+                    }
+                    
+                    if (!title) {
+                        title = filename.replace(/\.[^/.]+$/, '');
+                    }
+                    
+                    // 提取文章内容
+                    let articleContent = '';
+                    let questionsStart = -1;
+                    
+                    for (let i = contentStart; i < lines.length; i++) {
+                        if (lines[i].includes('---分隔符---') || 
+                            lines[i].includes('题目') || 
+                            lines[i].includes('Question') ||
+                            /^\d+[\.:：]/.test(lines[i])) {
+                            questionsStart = i;
+                            break;
+                        }
+                        if (lines[i].trim()) {
+                            articleContent += `<p>${lines[i].trim()}</p>`;
+                        }
+                    }
+                    
+                    if (questionsStart === -1) {
+                        // 如果没有找到分隔符，使用前20行作为文章内容
+                        questionsStart = Math.min(contentStart + 20, lines.length);
+                        for (let i = contentStart; i < questionsStart; i++) {
+                            if (lines[i].trim()) {
+                                articleContent += `<p>${lines[i].trim()}</p>`;
+                            }
+                        }
+                    }
+                    
+                    // 提取题目
+                    const questions = [];
+                    let currentQuestion = null;
+                    
+                    for (let i = questionsStart; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+                        
+                        // 检测题目开始
+                        if (line.includes('题目') || line.includes('Question') || 
+                            /^\d+[\.:：]/.test(line)) {
+                            if (currentQuestion && currentQuestion.options.length >= 2) {
+                                questions.push(currentQuestion);
+                            }
+                            
+                            let questionText = line.replace(/^题目\d*[:：]/, '')
+                                                  .replace(/^Question\s*\d*[:：]/, '')
+                                                  .replace(/^\d+[\.:：]\s*/, '')
+                                                  .trim();
+                            
+                            currentQuestion = {
+                                question: questionText,
+                                options: [],
+                                correctAnswer: '',
+                                explanation: {
+                                    english: '',
+                                    chinese: ''
+                                }
+                            };
+                        }
+                        // 检测选项
+                        else if (/^[A-D][\.:：)]/.test(line) && currentQuestion) {
+                            const optionText = line.replace(/^[A-D][\.:：)]\s*/, '').trim();
+                            currentQuestion.options.push(optionText);
+                        }
+                        // 检测答案
+                        else if (line.includes('答案：') || line.includes('Answer:') || 
+                                 line.includes('正确答案：')) {
+                            if (currentQuestion) {
+                                const answerMatch = line.match(/[A-D]/);
+                                if (answerMatch) {
+                                    currentQuestion.correctAnswer = answerMatch[0];
+                                }
+                            }
+                        }
+                        // 检测解析
+                        else if (line.includes('解析：') || line.includes('Explanation:') ||
+                                 line.includes('题目解析：')) {
+                            if (currentQuestion) {
+                                const explanationText = line.split(/[:：]/)[1]?.trim() || '';
+                                currentQuestion.explanation.chinese = explanationText;
+                                currentQuestion.explanation.english = explanationText;
+                            }
+                        }
+                        // 检测分隔符
+                        else if (line.includes('---分隔符---')) {
+                            if (currentQuestion && currentQuestion.options.length >= 2) {
+                                questions.push(currentQuestion);
+                                currentQuestion = null;
+                            }
+                        }
+                    }
+                    
+                    // 添加最后一个题目
+                    if (currentQuestion && currentQuestion.options.length >= 2) {
+                        questions.push(currentQuestion);
+                    }
+                    
+                    // 处理解析结果
+                    if (questions.length === 0) return null;
+                    
+                    // 确保每个题目都有4个选项
+                    questions.forEach((q, index) => {
+                        if (!q.correctAnswer) {
+                            q.correctAnswer = ['A', 'B', 'C', 'D'][index % 4];
+                        }
+                        
+                        while (q.options.length < 4) {
+                            q.options.push(`选项 ${q.options.length + 1}`);
+                        }
+                        
+                        if (!q.explanation.chinese) {
+                            q.explanation.chinese = `第${index + 1}题解析`;
+                        }
+                        if (!q.explanation.english) {
+                            q.explanation.english = `Explanation for question ${index + 1}`;
+                        }
+                    });
+                    
+                    return {
+                        id: articlesData.length + 1,
+                        title: title,
+                        content: articleContent || `<p>文章内容加载中...</p>`,
+                        questions: questions.slice(0, 10), // 最多10题
+                        totalQuestions: Math.min(questions.length, 10)
+                    };
+                    
+                } catch (error) {
+                    console.error('标准格式解析失败:', error);
+                    return null;
+                }
+            }
+            
+            // 解析TPO格式
+            function parseTPOFormat(content, filename) {
+                try {
+                    // 提取标题
+                    let title = '';
+                    const lines = content.split('\n');
+                    
+                    for (let i = 0; i < Math.min(5, lines.length); i++) {
+                        if (lines[i].trim() && lines[i].length > 10) {
+                            title = lines[i].trim().substring(0, 60);
+                            break;
+                        }
+                    }
+                    
+                    if (!title) {
+                        title = filename.replace(/\.[^/.]+$/, '');
+                    }
+                    
+                    // 提取文章内容（去除题目部分）
+                    let fullContent = content;
+                    const questionMarkers = [
+                        '1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.', '10.',
+                        'What can be', 'According to', 'The word', 'Why does', 'Which of',
+                        '参考答案', '正确答案'
+                    ];
+                    
+                    let contentEnd = content.length;
+                    for (const marker of questionMarkers) {
+                        const index = content.indexOf(marker);
+                        if (index !== -1 && index < contentEnd) {
+                            contentEnd = index;
+                        }
+                    }
+                    
+                    let articleContent = content.substring(0, contentEnd).trim();
+                    
+                    // 将文章分段
+                    const paragraphs = articleContent.split(/\n\s*\n/).filter(p => p.trim());
+                    let formattedContent = '';
+                    paragraphs.forEach(p => {
+                        formattedContent += `<p>${p.trim()}</p>`;
+                    });
+                    
+                    // 提取题目
+                    const questions = [];
+                    const questionTexts = [
+                        "What is the main idea of the passage?",
+                        "According to the passage, which of the following is true?",
+                        "What can be inferred from paragraph 1?",
+                        "The word 'mentioned' in paragraph 2 is closest in meaning to:",
+                        "Why does the author mention the example in paragraph 3?",
+                        "Which of the following best expresses the essential information?",
+                        "All of the following are mentioned EXCEPT:",
+                        "What is the purpose of paragraph 4?",
+                        "The author's attitude toward the topic can be described as:",
+                        "What would be the most likely outcome if...?"
+                    ];
+                    
+                    for (let i = 0; i < 5; i++) {
+                        questions.push({
+                            question: questionTexts[i],
+                            options: [
+                                "Option A: Based on the information in the passage",
+                                "Option B: According to the author's description",
+                                "Option C: As suggested by the evidence provided",
+                                "Option D: The passage implies that"
+                            ],
+                            correctAnswer: ['A', 'B', 'C', 'D'][i % 4],
+                            explanation: {
+                                english: `This question tests reading comprehension skills. Review the relevant sections of the passage to find the correct answer.`,
+                                chinese: `此题测试阅读理解能力。请回顾文章相关部分以找到正确答案。`
+                            }
+                        });
+                    }
+                    
+                    return {
+                        id: articlesData.length + 1,
+                        title: title,
+                        content: formattedContent || `<p>文章内容已加载。请仔细阅读并回答问题。</p>`,
+                        questions: questions,
+                        totalQuestions: 5
+                    };
+                    
+                } catch (error) {
+                    console.error('TPO格式解析失败:', error);
+                    return null;
+                }
+            }
+            
+            // 解析通用格式
+            function parseGeneralFormat(content, filename) {
+                try {
+                    // 按段落分割
+                    const paragraphs = content.split(/\n\s*\n/).filter(p => p.trim());
+                    
+                    if (paragraphs.length < 3) return null;
+                    
+                    // 第一段作为标题或文章开头
+                    let title = paragraphs[0].trim();
+                    if (title.length > 100) {
+                        title = title.substring(0, 60) + '...';
+                    }
+                    
+                    if (title.length < 10) {
+                        title = filename.replace(/\.[^/.]+$/, '');
+                    }
+                    
+                    // 文章内容（取前3-5段）
+                    let articleContent = '';
+                    const contentParagraphs = Math.min(paragraphs.length, 5);
+                    for (let i = 0; i < contentParagraphs; i++) {
+                        if (paragraphs[i].trim().length > 20) { // 过滤太短的段落
+                            articleContent += `<p>${paragraphs[i].trim()}</p>`;
+                        }
+                    }
+                    
+                    // 创建题目
+                    const questions = [];
+                    const questionTemplates = [
+                        "Based on the passage, what is the primary purpose of the text?",
+                        "Which of the following statements is supported by the passage?",
+                        "What can be inferred from the information presented?",
+                        "How does the author organize the information in the passage?",
+                        "What would be the most appropriate title for this passage?"
+                    ];
+                    
+                    for (let i = 0; i < 5; i++) {
+                        questions.push({
+                            question: questionTemplates[i],
+                            options: [
+                                "The passage mainly discusses...",
+                                "The author primarily focuses on...",
+                                "One key point made in the passage is...",
+                                "The organization of the passage can be described as..."
+                            ],
+                            correctAnswer: ['A', 'B', 'C', 'D'][i % 4],
+                            explanation: {
+                                english: `Question ${i + 1} requires careful reading of the passage.`,
+                                chinese: `第${i + 1}题需要仔细阅读文章。`
+                            }
+                        });
+                    }
+                    
+                    return {
+                        id: articlesData.length + 1,
+                        title: title,
+                        content: articleContent,
+                        questions: questions,
+                        totalQuestions: 5
+                    };
+                    
+                } catch (error) {
+                    console.error('通用格式解析失败:', error);
+                    return null;
+                }
+            }
+            
+            // 解析简单格式
+            function parseSimpleFormat(content, filename) {
+                // 使用默认文章
+                return getDefaultArticle(articlesData.length + 1);
+            }
+            
+            // 获取默认文章
+            function getDefaultArticle(articleNum) {
+                if (articleNum === 1) {
+                    return {
+                        id: 1,
+                        title: "The Baroque Period: Drama and Emotion in 17th Century Art",
+                        content: `<p>Emerging in early 17th century Europe, the Baroque artistic movement represented a dramatic departure from the restrained classicism of the Renaissance. Characterized by grandeur, emotional intensity, and elaborate ornamentation, Baroque art sought to engage viewers directly through powerful visual narratives. This style originated in Rome as a response to the Protestant Reformation, with the Catholic Church commissioning works that would communicate religious themes with maximum emotional impact.</p>
+                                
+                                <p>The Baroque aesthetic is distinguished by several key features: dramatic use of light and shadow (chiaroscuro), dynamic compositions with diagonal lines, and a strong sense of movement. Artists like Caravaggio pioneered tenebrism—an extreme form of chiaroscuro—creating stark contrasts that heightened emotional tension. In architecture, Gian Lorenzo Bernini's designs for St. Peter's Basilica exemplified the Baroque emphasis on theatricality and spatial complexity.</p>
+                                
+                                <p>Beyond religious contexts, Baroque principles influenced secular art, particularly portraiture and still life. Monarchs across Europe adopted the style to project power and majesty, with Louis XIV's Versailles palace serving as the ultimate expression of Baroque grandeur. The movement eventually spread globally through European colonization, adapting to local contexts in Latin America and Asia.</p>
+                                
+                                <p>While later artistic movements rejected Baroque extravagance, its influence persists in contemporary visual culture, particularly in film and theatrical design where dramatic lighting and emotional storytelling remain central.</p>`,
+                        questions: [
+                            {
+                                question: "What is the main purpose of the passage?",
+                                options: [
+                                    "To compare Baroque art with Renaissance art in detail",
+                                    "To describe the characteristics and historical context of Baroque art",
+                                    "To argue that Baroque art is superior to other artistic movements",
+                                    "To provide a biography of Caravaggio and Bernini"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "The passage provides a comprehensive overview of Baroque art, discussing its origins in response to the Protestant Reformation, its key characteristics (chiaroscuro, emotional intensity), major artists, spread through colonization, and lasting influence. This matches option B's description of covering characteristics and historical context.",
+                                    chinese: "文章全面概述了巴洛克艺术，讨论了它作为对新教改革的回应而起源，其主要特点（明暗对比法、情感强度）、重要艺术家、通过殖民的传播以及持久影响。这与选项B关于涵盖特点和历史背景的描述相符。"
+                                }
+                            },
+                            {
+                                question: "According to paragraph 2, all of the following are mentioned as characteristics of Baroque art EXCEPT:",
+                                options: [
+                                    "Dramatic use of light and shadow (chiaroscuro)",
+                                    "Dynamic compositions with diagonal lines",
+                                    "Simple, minimalist designs and structures",
+                                    "A strong sense of movement in artworks"
+                                ],
+                                correctAnswer: "C",
+                                explanation: {
+                                    english: "Paragraph 2 explicitly mentions A ('dramatic use of light and shadow'), B ('dynamic compositions with diagonal lines'), and D ('strong sense of movement'). However, it describes Baroque as having 'elaborate ornamentation' and 'theatricality' in the previous paragraph, which is the opposite of 'simple, minimalist designs.'",
+                                    chinese: "第2段明确提到了A（'明暗对比法的戏剧性使用'）、B（'带有对角线的动态构图'）和D（'艺术作品中的强烈运动感'）。然而，前一段将巴洛克描述为具有'精细装饰'和'戏剧性'，这与'简单、极简主义的设计'相反。"
+                                }
+                            },
+                            {
+                                question: "It can be inferred from the passage that tenebrism was particularly effective for:",
+                                options: [
+                                    "Creating subtle, understated emotional effects",
+                                    "Heightening emotional tension through contrast",
+                                    "Making paintings appear brighter and more cheerful",
+                                    "Simplifying complex religious narratives"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "Paragraph 2 states: 'Artists like Caravaggio pioneered tenebrism—an extreme form of chiaroscuro—creating stark contrasts that heightened emotional tension.' This direct statement supports the inference that tenebrism was effective for increasing emotional tension through contrast.",
+                                    chinese: "第2段说明：'像卡拉瓦乔这样的艺术家开创了暗色调主义——明暗对比法的一种极端形式——创造鲜明的对比，增强了情感张力。'这一直接陈述支持暗色调主义通过对比增强情感张力的推断。"
+                                }
+                            },
+                            {
+                                question: "The word <span class='highlight'>theatricality</span> in paragraph 2 is closest in meaning to:",
+                                options: [
+                                    "Simplicity",
+                                    "Dramatic effect",
+                                    "Practicality",
+                                    "Tradition"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "The word 'theatricality' refers to exaggerated or dramatic qualities reminiscent of theater. In the context of Baroque architecture, it relates to creating dramatic, impressive visual effects. The passage describes Baroque as having 'dramatic use of light and shadow' and seeking 'maximum emotional impact,' all supporting 'dramatic effect' as the closest meaning.",
+                                    chinese: "'theatricality'一词指的是让人联想到剧院的夸张或戏剧性特质。在巴洛克建筑的上下文中，它涉及创造戏剧性、令人印象深刻的视觉效果。文章将巴洛克描述为具有'明暗对比法的戏剧性使用'并寻求'最大情感冲击'，这些都支持'戏剧效果'作为最接近的含义。"
+                                }
+                            },
+                            {
+                                question: "According to the passage, what was one way Baroque art spread beyond Europe?",
+                                options: [
+                                    "Through international art competitions in the 18th century",
+                                    "Via European colonization, adapting to local contexts",
+                                    "Through traveling exhibitions organized by museums",
+                                    "By artists voluntarily migrating to teach their techniques"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "Paragraph 3 explicitly states: 'The movement eventually spread globally through European colonization, adapting to local contexts in Latin America and Asia.' This directly answers the question about how Baroque art spread beyond Europe.",
+                                    chinese: "第3段明确说明：'该运动最终通过欧洲殖民在全球传播，适应了拉丁美洲和亚洲的当地环境。'这直接回答了关于巴洛克艺术如何传播到欧洲以外的问题。"
+                                }
+                            }
+                        ],
+                        totalQuestions: 5
+                    };
+                } else if (articleNum === 2) {
+                    return {
+                        id: 2,
+                        title: "Neutron Stars: The Extreme Remnants of Stellar Evolution",
+                        content: `<p>Neutron stars represent one of the most extreme and enigmatic objects in the universe, formed when massive stars exhaust their nuclear fuel and undergo catastrophic supernova explosions. These stellar remnants compress approximately 1.4 times the Sun's mass into a sphere only about 20 kilometers in diameter, resulting in densities surpassing that of atomic nuclei. A single teaspoon of neutron star material would weigh approximately one billion tons under Earth's gravity.</p>
+                                
+                                <p>The formation process involves the collapse of a stellar core, where immense gravitational forces overcome electron degeneracy pressure, forcing protons and electrons to merge into neutrons. This creates matter composed almost entirely of neutrons, hence the name "neutron star." Conservation of angular momentum during collapse causes these objects to rotate rapidly, with some completing hundreds of revolutions per second.</p>
+                                
+                                <p>Neutron stars exhibit several remarkable properties. Their intense magnetic fields, trillions of times stronger than Earth's, can accelerate charged particles to produce beams of radiation. When these beams sweep across our line of sight, we observe pulsars—regularly timed pulses of electromagnetic radiation. Some neutron stars in binary systems accrete matter from companion stars, generating X-ray emissions detectable across interstellar distances.</p>
+                                
+                                <p>Studying neutron stars provides crucial insights into fundamental physics, including the behavior of matter under extreme conditions, gravitational waves, and the synthesis of heavy elements during supernovae. They serve as natural laboratories for testing theories of dense matter physics.</p>`,
+                        questions: [
+                            {
+                                question: "Which of the following best summarizes the main idea of the passage?",
+                                options: [
+                                    "Neutron stars are temporary phenomena that quickly disappear after formation",
+                                    "Neutron stars are dense stellar remnants with extreme properties that provide insights into fundamental physics",
+                                    "All stars eventually become neutron stars at the end of their life cycles",
+                                    "Neutron stars are primarily studied for their aesthetic value in astronomical observations"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "The passage describes neutron stars as dense remnants with extreme properties (density, rotation, magnetic fields) and concludes by stating they 'provide crucial insights into fundamental physics.' This accurately summarizes the main idea presented throughout the text.",
+                                    chinese: "文章将中子星描述为具有极端性质（密度、旋转、磁场）的致密残骸，并总结说明它们'为 fundamental physics 提供 crucial insights'。这准确总结了全文呈现的主要观点。"
+                                }
+                            },
+                            {
+                                question: "According to the passage, all of the following are mentioned as properties of neutron stars EXCEPT:",
+                                options: [
+                                    "Extremely high density surpassing atomic nuclei",
+                                    "Rapid rotation, sometimes hundreds of revolutions per second",
+                                    "Weak magnetic fields similar to Earth's",
+                                    "Intense magnetic fields trillions of times stronger than Earth's"
+                                ],
+                                correctAnswer: "C",
+                                explanation: {
+                                    english: "Paragraph 1 mentions extreme density (A), paragraph 2 mentions rapid rotation (B), and paragraph 3 mentions intense magnetic fields trillions of times stronger than Earth's (D). Option C contradicts the passage, which states neutron stars have 'intense magnetic fields, trillions of times stronger than Earth's.'",
+                                    chinese: "第1段提到了 extreme density（A），第2段提到了 rapid rotation（B），第3段提到了 intense magnetic fields trillions of times stronger than Earth's（D）。选项C与文章矛盾，文章说明中子星具有' intense magnetic fields，trillions of times stronger than Earth's'。"
+                                }
+                            },
+                            {
+                                question: "It can be inferred from paragraph 2 that the rapid rotation of neutron stars results from:",
+                                options: [
+                                    "External forces from nearby stars pushing on them",
+                                    "The conservation of angular momentum during stellar collapse",
+                                    "Deliberate design by astrophysicists studying them",
+                                    "Random variations in magnetic field alignment"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "Paragraph 2 explicitly states: 'Conservation of angular momentum during collapse causes these objects to rotate rapidly.' This direct statement supports the inference that rapid rotation results from angular momentum conservation during the collapse process.",
+                                    chinese: "第2段明确说明：'坍塌过程中的角动量守恒导致这些物体快速旋转。'这一直接陈述支持快速旋转是由坍塌过程中角动量守恒引起的推断。"
+                                }
+                            },
+                            {
+                                question: "The word <span class='highlight'>accrete</span> in paragraph 3 is closest in meaning to:",
+                                options: [
+                                    "Repel",
+                                    "Absorb or accumulate",
+                                    "Destroy",
+                                    "Illuminate"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "In the context of 'neutron stars in binary systems accrete matter from companion stars,' 'accrete' means to gather or accumulate material. The passage describes this process as generating X-ray emissions, which occurs when neutron stars pull in and accumulate matter from nearby stars.",
+                                    chinese: "在'双星系统中的中子星从伴星吸积物质'的上下文中，'accrete'意为 gathering 或 accumulating 物质。文章将这一过程描述为产生X射线辐射，当中子星从邻近恒星吸入并积累物质时发生。"
+                                }
+                            },
+                            {
+                                question: "According to the passage, what makes neutron stars valuable for scientific research?",
+                                options: [
+                                    "Their proximity to Earth makes them easy to study with basic telescopes",
+                                    "They serve as natural laboratories for testing theories of dense matter physics",
+                                    "They are the only astronomical objects that produce visible light",
+                                    "They are predictable and follow simple physical laws unlike other celestial bodies"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "The final paragraph explicitly states: 'Studying neutron stars provides crucial insights into fundamental physics... They serve as natural laboratories for testing theories of dense matter physics.' This directly answers why they are valuable for scientific research.",
+                                    chinese: "最后一段明确说明：'研究中子星为 fundamental physics 提供 crucial insights...它们作为测试 dense matter physics 理论的天然实验室。'这直接回答了为什么它们对科学研究有价值。"
+                                }
+                            }
+                        ],
+                        totalQuestions: 5
+                    };
+                } else {
+                    return {
+                        id: 3,
+                        title: "The Future of Renewable Energy: A Global Perspective",
+                        content: `<p>Renewable energy sources have emerged as critical components in the global effort to combat climate change and transition toward sustainable energy systems. Solar, wind, hydroelectric, geothermal, and biomass technologies have experienced exponential growth over the past decade, driven by technological advancements, policy support, and decreasing costs. The International Energy Agency reports that renewables accounted for nearly 90% of new power capacity added worldwide in recent years.</p>
+                                
+                                <p>Solar photovoltaic technology has seen particularly dramatic improvements, with module costs falling by over 80% since 2010. This cost reduction, combined with increased efficiency rates, has made solar power competitive with fossil fuels in many regions. Wind energy has followed a similar trajectory, with larger turbine designs and improved materials enabling higher capacity factors and lower levelized costs of electricity.</p>
+                                
+                                <p>Despite these advancements, significant challenges remain for renewable energy integration. The intermittent nature of solar and wind power necessitates developments in energy storage technologies and grid modernization. Battery storage systems, particularly lithium-ion technology, have improved substantially but still face limitations in duration and scalability for grid-level applications.</p>
+                                
+                                <p>The future of renewable energy will depend on continued innovation in storage solutions, smart grid technologies, and international cooperation on climate policy. As nations work toward net-zero emissions targets, renewables are expected to dominate new energy investments and gradually replace fossil fuel-based generation worldwide.</p>`,
+                        questions: [
+                            {
+                                question: "What is the primary focus of the passage?",
+                                options: [
+                                    "The history of fossil fuel energy",
+                                    "The development and challenges of renewable energy",
+                                    "A comparison between solar and wind energy",
+                                    "The economic benefits of geothermal energy"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "The passage discusses the growth of renewable energy technologies, their advancements, and the challenges they face for integration, making option B the most accurate description of its primary focus.",
+                                    chinese: "文章讨论了可再生能源技术的增长、其进步以及整合面临的挑战，使选项B成为对其主要焦点最准确的描述。"
+                                }
+                            },
+                            {
+                                question: "According to the passage, what has contributed to the growth of renewable energy?",
+                                options: [
+                                    "Technological stagnation in fossil fuels",
+                                    "Technological advancements, policy support, and decreasing costs",
+                                    "Decreasing interest in climate change",
+                                    "Limited availability of fossil fuels"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "The first paragraph states that renewable energy growth has been 'driven by technological advancements, policy support, and decreasing costs,' directly supporting option B.",
+                                    chinese: "第一段说明可再生能源的增长'由技术进步、政策支持和成本下降推动'，直接支持选项B。"
+                                }
+                            },
+                            {
+                                question: "The word <span class='highlight'>intermittent</span> in paragraph 3 is closest in meaning to:",
+                                options: [
+                                    "Continuous",
+                                    "Unpredictable or irregular",
+                                    "Powerful",
+                                    "Expensive"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "In the context of solar and wind power, 'intermittent' refers to their unpredictable or irregular nature, as they depend on weather conditions and time of day.",
+                                    chinese: "在太阳能和风能的上下文中，'intermittent'指的是它们不可预测或不规则的性质，因为它们依赖于天气条件和时间。"
+                                }
+                            },
+                            {
+                                question: "What challenge is mentioned regarding solar and wind energy?",
+                                options: [
+                                    "They are too expensive to implement",
+                                    "They require energy storage solutions due to their intermittent nature",
+                                    "They are only available in specific geographic locations",
+                                    "They produce harmful emissions"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "Paragraph 3 states that 'The intermittent nature of solar and wind power necessitates developments in energy storage technologies,' directly supporting option B.",
+                                    chinese: "第3段说明'太阳能和风能的间歇性性质需要能源存储技术的发展'，直接支持选项B。"
+                                }
+                            },
+                            {
+                                question: "According to the passage, what is expected to happen as nations work toward net-zero emissions?",
+                                options: [
+                                    "Fossil fuels will become more dominant",
+                                    "Renewables are expected to dominate new energy investments",
+                                    "Energy consumption will decrease significantly",
+                                    "Nuclear energy will replace all other forms"
+                                ],
+                                correctAnswer: "B",
+                                explanation: {
+                                    english: "The final paragraph states that 'renewables are expected to dominate new energy investments and gradually replace fossil fuel-based generation worldwide' as nations work toward net-zero emissions.",
+                                    chinese: "最后一段说明，随着各国努力实现净零排放，'可再生能源预计将主导新能源投资，并逐步取代全球基于化石燃料的发电'。"
+                                }
+                            }
+                        ],
+                        totalQuestions: 5
+                    };
+                }
+            }
+            
+            // 开始练习按钮事件
+            startPracticeBtn.addEventListener('click', function() {
+                if (articlesData.length === 0) {
+                    showError('请先导入文章！');
+                    return;
+                }
+                
+                // 初始化练习状态
+                initializePractice();
+                
+                // 隐藏上传面板，显示主内容
+                uploadPanel.style.display = 'none';
+                mainContent.style.display = 'block';
+                
+                // 启动计时器
+                startTimer();
+                
+                // 渲染文章和题目
+                renderArticles();
+                renderQuestions();
+                showArticle(1);
+                showQuestion(1, 1);
+                
+                // 更新完成状态
+                updateCompletionStatus();
+            });
+            
+            // 初始化练习状态
+            function initializePractice() {
+                totalArticles = articlesData.length;
+                
+                // 初始化每个文章的当前题目和问题数量
+                articlesData.forEach(article => {
+                    currentQuestion[article.id] = 1;
+                    totalQuestionsPerArticle[article.id] = article.totalQuestions;
+                    scores[article.id] = 0;
+                    
+                    // 初始化正确答案
+                    correctAnswers[article.id] = {};
+                    article.questions.forEach((q, index) => {
+                        correctAnswers[article.id][index + 1] = q.correctAnswer;
+                    });
+                });
+                
+                // 更新总文章数显示
+                totalArticlesElement.textContent = totalArticles;
+                
+                // 更新总问题数
+                const totalQuestions = articlesData.reduce((sum, article) => sum + article.totalQuestions, 0);
+                totalQuestionsCountElement.textContent = totalQuestions;
+                totalQuestionsFinalElement.textContent = totalQuestions;
+                
+                // 重置其他状态
+                answeredQuestions.clear();
+                userAnswers = {};
+                isSubmitted = false;
+                elapsedSeconds = 0;
+            }
+            
+            // 渲染所有文章
+            function renderArticles() {
+                articlesContentContainer.innerHTML = '';
+                
+                articlesData.forEach(article => {
+                    const articleDiv = document.createElement('div');
+                    articleDiv.className = `article-content ${article.id === 1 ? '' : 'hidden'}`;
+                    articleDiv.id = `article-${article.id}-content`;
+                    articleDiv.innerHTML = `
+                        <div class="section-title">📚 Academic Article ${article.id}</div>
+                        <div class="email-header">
+                            <h1>${article.title}</h1>
+                        </div>
+                        <div class="email-body">
+                            ${article.content}
+                        </div>
+                    `;
+                    articlesContentContainer.appendChild(articleDiv);
+                });
+            }
+            
+            // 渲染所有题目
+            function renderQuestions() {
+                questionsContainer.innerHTML = '';
+                
+                articlesData.forEach(article => {
+                    article.questions.forEach((q, index) => {
+                        const questionNum = index + 1;
+                        const questionDiv = document.createElement('div');
+                        questionDiv.className = `question-container article-question ${article.id === 1 && questionNum === 1 ? '' : 'hidden'}`;
+                        questionDiv.id = `article${article.id}-question-${questionNum}`;
+                        
+                        // 构建选项HTML
+                        let optionsHtml = '';
+                        const optionLetters = ['A', 'B', 'C', 'D'];
+                        optionLetters.forEach((letter, optIndex) => {
+                            optionsHtml += `
+                                <div class="option" data-question="${questionNum}" data-article="${article.id}" data-option="${letter}">
+                                    <span class="option-letter">${letter}</span>
+                                    <div class="option-text">${q.options[optIndex]}</div>
+                                </div>
+                            `;
+                        });
+                        
+                        questionDiv.innerHTML = `
+                            <div class="question-title">
+                                <span class="question-number">${questionNum}</span>
+                                <div class="question-text">${q.question}</div>
+                            </div>
+                            <div class="options-container">
+                                ${optionsHtml}
+                            </div>
+                            <button class="check-btn" data-question="${questionNum}" data-article="${article.id}" style="display: none;">Show Explanation</button>
+                            <div class="question-feedback hidden" id="feedback-article${article.id}-${questionNum}"></div>
+                            <div class="explanation" id="explanation-article${article.id}-${questionNum}">
+                                <div class="explanation-content english">
+                                    <h4>📖 Explanation</h4>
+                                    <p>Correct Answer: <span class="correct-answer">${q.correctAnswer}. ${q.options[optionLetters.indexOf(q.correctAnswer)]}</span></p>
+                                    <p>${q.explanation.english}</p>
+                                </div>
+                                <div class="explanation-content chinese">
+                                    <h4>📖 题目解析</h4>
+                                    <p>正确答案: <span class="correct-answer">${q.correctAnswer}. ${q.options[optionLetters.indexOf(q.correctAnswer)]}</span></p>
+                                    <p>${q.explanation.chinese}</p>
+                                </div>
+                                <div class="language-switch">
+                                    <button class="lang-btn active" data-lang="english" data-question="${questionNum}" data-article="${article.id}">English</button>
+                                    <button class="lang-btn" data-lang="chinese" data-question="${questionNum}" data-article="${article.id}">中文</button>
+                                </div>
+                            </div>
+                            <div class="question-navigation">
+                                <button class="nav-btn" id="prev-btn-article${article.id}-${questionNum}" ${questionNum === 1 ? 'disabled' : ''}>
+                                    ← Previous Question
+                                </button>
+                                <div class="question-counter">Question ${questionNum} of ${article.totalQuestions}</div>
+                                <button class="nav-btn" id="next-btn-article${article.id}-${questionNum}" ${questionNum === article.totalQuestions ? 'disabled' : ''}>
+                                    Next Question →
+                                </button>
+                            </div>
+                        `;
+                        
+                        questionsContainer.appendChild(questionDiv);
+                    });
+                });
+                
+                // 绑定事件监听器
+                bindQuestionEvents();
+            }
+            
+            // 绑定题目事件监听器
+            function bindQuestionEvents() {
+                // 选项点击事件
+                const options = document.querySelectorAll('.option[data-article]');
+                options.forEach(option => {
+                    option.addEventListener('click', function() {
+                        // 如果已提交或时间已到，不允许修改答案
+                        if (isSubmitted || elapsedSeconds >= maxTime) return;
+                        
+                        const articleNum = parseInt(this.getAttribute('data-article'));
+                        const questionNum = parseInt(this.getAttribute('data-question'));
+                        const selectedOption = this.getAttribute('data-option');
+                        const questionKey = `${articleNum}-${questionNum}`;
+                        
+                        // 移除同一问题下其他选项的选中状态
+                        document.querySelectorAll(`.option[data-article="${articleNum}"][data-question="${questionNum}"]`).forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        
+                        // 选中当前选项
+                        this.classList.add('selected');
+                        
+                        // 保存用户答案
+                        userAnswers[questionKey] = selectedOption;
+                        
+                        // 如果这是首次回答该问题，添加到已回答集合
+                        if (!answeredQuestions.has(questionKey)) {
+                            answeredQuestions.add(questionKey);
+                            updateCompletionStatus();
+                        }
+                    });
+                });
+                
+                // Check Answer按钮事件
+                const checkButtons = document.querySelectorAll('.check-btn[data-article]');
+                checkButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        // 只在提交后才能使用
+                        if (!isSubmitted) return;
+                        
+                        const articleNum = parseInt(this.getAttribute('data-article'));
+                        const questionNum = parseInt(this.getAttribute('data-question'));
+                        const explanation = document.getElementById(`explanation-article${articleNum}-${questionNum}`);
+                        
+                        // 切换解析显示
+                        explanation.classList.toggle('show');
+                        
+                        // 更新按钮文本
+                        this.textContent = explanation.classList.contains('show') ? 
+                            'Hide Explanation' : 'Show Explanation';
+                    });
+                });
+                
+                // 语言切换按钮事件
+                const langButtons = document.querySelectorAll('.lang-btn[data-article]');
+                langButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        // 只在提交后才能使用
+                        if (!isSubmitted) return;
+                        
+                        const articleNum = this.getAttribute('data-article');
+                        const questionNum = this.getAttribute('data-question');
+                        const lang = this.getAttribute('data-lang');
+                        
+                        // 更新按钮激活状态
+                        document.querySelectorAll(`.lang-btn[data-article="${articleNum}"][data-question="${questionNum}"]`).forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                        
+                        // 切换对应语言的解析内容
+                        const explanationDiv = document.getElementById(`explanation-article${articleNum}-${questionNum}`);
+                        const englishContent = explanationDiv.querySelector('.explanation-content.english');
+                        const chineseContent = explanationDiv.querySelector('.explanation-content.chinese');
+                        
+                        if (lang === 'english') {
+                            englishContent.style.display = 'block';
+                            chineseContent.style.display = 'none';
+                        } else {
+                            englishContent.style.display = 'none';
+                            chineseContent.style.display = 'block';
+                        }
+                    });
+                });
+                
+                // 题目导航按钮事件
+                for (let articleNum = 1; articleNum <= totalArticles; articleNum++) {
+                    if (!currentQuestion[articleNum]) continue;
+                    
+                    for (let i = 1; i <= totalQuestionsPerArticle[articleNum]; i++) {
+                        // 下一题按钮
+                        const nextBtn = document.getElementById(`next-btn-article${articleNum}-${i}`);
+                        if (nextBtn) {
+                            nextBtn.addEventListener('click', function() {
+                                if (currentQuestion[articleNum] < totalQuestionsPerArticle[articleNum]) {
+                                    showQuestion(articleNum, currentQuestion[articleNum] + 1);
+                                }
+                            });
+                        }
+                        
+                        // 上一题按钮
+                        const prevBtn = document.getElementById(`prev-btn-article${articleNum}-${i}`);
+                        if (prevBtn) {
+                            prevBtn.addEventListener('click', function() {
+                                if (currentQuestion[articleNum] > 1) {
+                                    showQuestion(articleNum, currentQuestion[articleNum] - 1);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // 计时器功能
+            function startTimer() {
+                timerStartTime = Date.now();
+                isTimerRunning = true;
+                timeWarning.style.display = 'none';
+                
+                timerInterval = setInterval(function() {
+                    elapsedSeconds = Math.floor((Date.now() - timerStartTime) / 1000);
+                    
+                    // 更新计时器显示
+                    const hours = Math.floor(elapsedSeconds / 3600);
+                    const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+                    const seconds = elapsedSeconds % 60;
+                    
+                    timerDisplay.textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    // 检查是否超时（2小时）
+                    if (elapsedSeconds >= maxTime) {
+                        stopTimer();
+                        timeWarning.style.display = 'block';
+                        
+                        // 自动提交
+                        if (!isSubmitted) {
+                            submitAllAnswers();
+                        }
+                    }
+                }, 1000);
+            }
+            
+            function stopTimer() {
+                if (isTimerRunning) {
+                    clearInterval(timerInterval);
+                    isTimerRunning = false;
+                }
+            }
+            
+            // 显示特定文章
+            function showArticle(articleNum) {
+                // 隐藏所有文章内容
+                for (let i = 1; i <= totalArticles; i++) {
+                    const articleElement = document.getElementById(`article-${i}-content`);
+                    if (articleElement) {
+                        articleElement.classList.add('hidden');
+                    }
+                }
+                
+                // 显示当前文章内容
+                document.getElementById(`article-${articleNum}-content`).classList.remove('hidden');
+                currentArticle = articleNum;
+                
+                // 更新文章导航按钮状态
+                updateArticleNavigationButtons();
+                
+                // 更新当前文章显示
+                currentArticleElement.textContent = articleNum;
+                articleTitleElement.textContent = articlesData[articleNum - 1].title;
+                
+                // 更新左侧分数显示
+                document.getElementById('current-article-score').textContent = scores[articleNum];
+                document.getElementById('total-questions-per-article').textContent = totalQuestionsPerArticle[articleNum];
+                document.getElementById('total-questions').textContent = totalQuestionsPerArticle[articleNum];
+                
+                // 显示当前文章的第一题
+                showQuestion(articleNum, currentQuestion[articleNum]);
+            }
+            
+            // 显示特定文章的特定题目
+            function showQuestion(articleNum, questionNum) {
+                // 隐藏所有题目
+                document.querySelectorAll('.article-question').forEach(question => {
+                    question.classList.add('hidden');
+                });
+                
+                // 显示当前题目
+                const currentQuestionElement = document.getElementById(`article${articleNum}-question-${questionNum}`);
+                if (currentQuestionElement) {
+                    currentQuestionElement.classList.remove('hidden');
+                }
+                
+                currentQuestion[articleNum] = questionNum;
+                
+                // 更新导航按钮状态
+                updateNavigationButtons(articleNum);
+                
+                // 更新左侧题目标识
+                document.getElementById('current-q-num').textContent = questionNum;
+                
+                // 如果已提交，显示该题目的反馈
+                if (isSubmitted) {
+                    showQuestionFeedback(articleNum, questionNum);
+                }
+            }
+            
+            // 显示题目反馈（提交后）
+            function showQuestionFeedback(articleNum, questionNum) {
+                const questionKey = `${articleNum}-${questionNum}`;
+                const userAnswer = userAnswers[questionKey];
+                const correctAnswer = correctAnswers[articleNum][questionNum];
+                const isCorrect = userAnswer === correctAnswer;
+                
+                // 获取反馈元素
+                const feedbackElement = document.getElementById(`feedback-article${articleNum}-${questionNum}`);
+                const checkButton = document.querySelector(`.check-btn[data-article="${articleNum}"][data-question="${questionNum}"]`);
+                const options = document.querySelectorAll(`.option[data-article="${articleNum}"][data-question="${questionNum}"]`);
+                
+                if (feedbackElement && checkButton && options.length > 0) {
+                    // 显示反馈
+                    feedbackElement.textContent = isCorrect ? 
+                        '✓ Correct! Well done.' : 
+                        `✗ Incorrect. The correct answer is ${correctAnswer}.`;
+                    feedbackElement.className = isCorrect ? 'question-feedback correct' : 'question-feedback incorrect';
+                    feedbackElement.classList.remove('hidden');
+                    
+                    // 显示Check Answer按钮
+                    checkButton.style.display = 'block';
+                    checkButton.classList.add('visible');
+                    
+                    // 高亮显示正确答案和用户答案
+                    options.forEach(opt => {
+                        const optionLetter = opt.getAttribute('data-option');
+                        
+                        // 高亮显示正确答案
+                        if (optionLetter === correctAnswer) {
+                            opt.style.backgroundColor = '#e8f7ef';
+                            opt.style.borderColor = '#2ecc71';
+                        }
+                        
+                        // 如果用户选择了错误答案，高亮显示
+                        if (optionLetter === userAnswer && !isCorrect) {
+                            opt.style.backgroundColor = '#fdeded';
+                            opt.style.borderColor = '#e74c3c';
+                        }
+                        
+                        // 禁用点击
+                        opt.style.pointerEvents = 'none';
+                    });
+                }
+            }
+            
+            // 更新文章导航按钮状态
+            function updateArticleNavigationButtons() {
+                // 更新上一篇文章按钮
+                prevArticleBtn.disabled = (currentArticle === 1);
+                
+                // 更新下一篇文章按钮
+                nextArticleBtn.disabled = (currentArticle === totalArticles);
+            }
+            
+            // 更新题目导航按钮状态
+            function updateNavigationButtons(articleNum) {
+                const questionNum = currentQuestion[articleNum];
+                
+                // 更新上一题按钮
+                const prevBtn = document.getElementById(`prev-btn-article${articleNum}-${questionNum}`);
+                if (prevBtn) {
+                    prevBtn.disabled = (questionNum === 1);
+                }
+                
+                // 更新下一题按钮
+                const nextBtn = document.getElementById(`next-btn-article${articleNum}-${questionNum}`);
+                if (nextBtn) {
+                    nextBtn.disabled = (questionNum === totalQuestionsPerArticle[articleNum]);
+                }
+            }
+            
+            // 更新完成状态显示
+            function updateCompletionStatus() {
+                answeredCountElement.textContent = answeredQuestions.size;
+                
+                // 计算总问题数
+                const totalQuestions = articlesData.reduce((sum, article) => sum + article.totalQuestions, 0);
+                
+                // 启用/禁用提交按钮
+                if (answeredQuestions.size === totalQuestions) {
+                    submitBtn.disabled = false;
+                    completionNotice.style.display = 'none';
+                } else {
+                    submitBtn.disabled = true;
+                    completionNotice.style.display = 'block';
+                }
+            }
+            
+            // 提交所有答案
+            function submitAllAnswers() {
+                // 停止计时器
+                stopTimer();
+                
+                // 标记为已提交
+                isSubmitted = true;
+                
+                // 计算分数
+                for (let articleNum = 1; articleNum <= totalArticles; articleNum++) {
+                    scores[articleNum] = 0;
+                    for (let questionNum = 1; questionNum <= totalQuestionsPerArticle[articleNum]; questionNum++) {
+                        const questionKey = `${articleNum}-${questionNum}`;
+                        if (userAnswers[questionKey] === correctAnswers[articleNum][questionNum]) {
+                            scores[articleNum]++;
+                        }
+                    }
+                }
+                
+                // 计算总分数
+                let totalScore = 0;
+                for (let articleNum = 1; articleNum <= totalArticles; articleNum++) {
+                    totalScore += scores[articleNum];
+                }
+                
+                const totalQuestions = articlesData.reduce((sum, article) => sum + article.totalQuestions, 0);
+                const accuracy = Math.round((totalScore / totalQuestions) * 100);
+                
+                // 更新结果显示
+                resultsSummary.innerHTML = '';
+                
+                // 添加每篇文章的结果
+                articlesData.forEach(article => {
+                    const articleResultDiv = document.createElement('div');
+                    articleResultDiv.className = 'article-result';
+                    articleResultDiv.innerHTML = `
+                        <div class="article-title">${article.title}</div>
+                        <div class="article-score" id="article${article.id}-final-score">${scores[article.id]}</div>
+                        <div class="article-total">out of ${article.totalQuestions} questions</div>
+                    `;
+                    resultsSummary.appendChild(articleResultDiv);
+                });
+                
+                // 添加时间和准确率结果
+                const readingTimeDiv = document.createElement('div');
+                readingTimeDiv.className = 'article-result';
+                const hours = Math.floor(elapsedSeconds / 3600);
+                const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+                const seconds = elapsedSeconds % 60;
+                const readingTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                readingTimeDiv.innerHTML = `
+                    <div class="article-title">Reading Time</div>
+                    <div class="article-score" id="reading-time">${readingTime}</div>
+                    <div class="article-total">2 hours allocated</div>
+                `;
+                resultsSummary.appendChild(readingTimeDiv);
+                
+                const accuracyDiv = document.createElement('div');
+                accuracyDiv.className = 'article-result';
+                accuracyDiv.innerHTML = `
+                    <div class="article-title">Overall Accuracy</div>
+                    <div class="article-score" id="accuracy-score">${accuracy}%</div>
+                    <div class="article-total">of questions correct</div>
+                `;
+                resultsSummary.appendChild(accuracyDiv);
+                
+                document.getElementById('percentage-score').textContent = `${accuracy}%`;
+                document.getElementById('total-correct').textContent = totalScore;
+                
+                // 显示当前题目的反馈
+                showQuestionFeedback(currentArticle, currentQuestion[currentArticle]);
+                
+                // 显示结果面板
+                resultsPanel.classList.add('show');
+                
+                // 滚动到结果面板
+                resultsPanel.scrollIntoView({ behavior: 'smooth' });
+                
+                // 禁用提交按钮
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitted ✓';
+                
+                // 禁用所有选项的点击
+                document.querySelectorAll('.option[data-article]').forEach(option => {
+                    option.style.pointerEvents = 'none';
+                });
+            }
+            
+            // 初始化文章导航事件
+            prevArticleBtn.addEventListener('click', function() {
+                if (currentArticle > 1) {
+                    showArticle(currentArticle - 1);
+                }
+            });
+            
+            nextArticleBtn.addEventListener('click', function() {
+                if (currentArticle < totalArticles) {
+                    showArticle(currentArticle + 1);
+                }
+            });
+            
+            // 提交按钮事件
+            submitBtn.addEventListener('click', submitAllAnswers);
+        });
+    </script>
+</body>
+</html>
